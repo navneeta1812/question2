@@ -1,23 +1,51 @@
-import logo from './logo.svg';
+import React, { useState,useEffect } from  'react';
 import './App.css';
+import { ProfileCard } from './ProfileCard/ProfileCard';
 
 function App() {
+
+  const [profileData, setprofileData] = useState([])
+
+  const [page, setpage] = useState(1)
+
+  useEffect(() => {
+   
+    fetch("https://reqres.in/api/users?page="+page).then(res=>{
+      if(res.ok){
+        return res.json();
+      }
+    
+    }).then(data =>{
+      setprofileData(data.data)
+      console.log(data.data)
+    }).catch(err =>{
+      alert("Error Occured : "+err);
+    })
+
+  }, [page])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+      {
+
+        profileData.map(profile =>(
+          <ProfileCard
+          profileDetails={profile} />
+        ))
+      }
+
+      <h5>{'Page : '+page}</h5>
+   
+
+      <div className='buttonContainer'>
+        <button onClick={()=>{
+          if(page!=1){
+            setpage(1)
+          }
+        }}>Previous Page</button>
+        <button onClick={()=>setpage(2)}>Next Page</button>
+      </div>
     </div>
   );
 }
